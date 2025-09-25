@@ -1,0 +1,17 @@
+{
+  "restaurants": [
+    {
+      "id": "1ff78921-7c41-4d44-a88f-755e30699814",
+      "name": "Marcos Pizza",
+      "blacklisted": false,
+      "lastSelectedDate": 1758832465987
+    },
+    {
+      "id": "77584ea3-ae56-4d8c-a17a-70a7265f0a5f",
+      "name": "Burgers",
+      "blacklisted": false
+    }
+  ],
+  "cooldownWeeks": 2,
+  "activatedBy": "0b49e66d-c52c-4766-b1a2-ee350f127413"
+}
