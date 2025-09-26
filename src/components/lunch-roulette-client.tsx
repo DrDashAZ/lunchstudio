@@ -51,11 +51,23 @@ export default function LunchRouletteClient() {
   const [stateError, setStateError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Generate a unique session ID for this browser session
-  const [sessionId] = useState(() => crypto.randomUUID());
+  // Generate a persistent session ID stored in localStorage
+  const [sessionId, setSessionId] = useState<string>("");
 
   useEffect(() => {
     setIsClient(true);
+    
+    // Initialize persistent session ID on client side
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("lunchRouletteSessionId");
+      if (stored) {
+        setSessionId(stored);
+      } else {
+        const newId = crypto.randomUUID();
+        localStorage.setItem("lunchRouletteSessionId", newId);
+        setSessionId(newId);
+      }
+    }
   }, []);
 
   // Load shared state from server
@@ -72,6 +84,11 @@ export default function LunchRouletteClient() {
           setRestaurants(Array.isArray(data?.restaurants) ? data.restaurants : []);
           setCooldownWeeks(typeof data?.cooldownWeeks === "number" ? data.cooldownWeeks : 2);
           setActivatedBy(data?.activatedBy);
+          
+          // If this session is the activator, ensure local activation is also set
+          if (data?.activatedBy === sessionId && !isActivated) {
+            setIsActivated(true);
+          }
         }
       } catch (e: any) {
         if (!cancelled) setStateError(e?.message ?? "Failed to load state");
@@ -83,7 +100,7 @@ export default function LunchRouletteClient() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [sessionId, isActivated]);
 
   async function persist(nextRestaurants: Restaurant[] = restaurants, nextCooldownWeeks: number = cooldownWeeks, nextActivatedBy?: string) {
     try {
@@ -246,7 +263,7 @@ export default function LunchRouletteClient() {
             <CardHeader>
                 <CardTitle>Add a Restaurant</CardTitle>
                 <CardDescription>
-                    Anyone can add. Only the activator can modify or delete. Spots available on{" "}
+                    Build your list of potential lunch spots available on{" "}
                     <a
                         href="https://www.doordash.com/home"
                         target="_blank"

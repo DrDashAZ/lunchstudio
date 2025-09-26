@@ -9,9 +9,26 @@
     {
       "id": "77584ea3-ae56-4d8c-a17a-70a7265f0a5f",
       "name": "Burgers",
+      "blacklisted": false,
+      "lastSelectedDate": 1758921797967
+    },
+    {
+      "id": "f009651a-b305-4eee-9b33-5af8b6591ba5",
+      "name": "diner",
+      "blacklisted": false
+    },
+    {
+      "id": "8400b472-8527-4701-9a2f-79d9e6d892da",
+      "name": "test",
+      "blacklisted": false,
+      "lastSelectedDate": 1758922448421
+    },
+    {
+      "id": "7116bd1f-e037-4926-a1d8-541a1a29bc5d",
+      "name": "tesss",
       "blacklisted": false
     }
   ],
   "cooldownWeeks": 2,
-  "activatedBy": "0b49e66d-c52c-4766-b1a2-ee350f127413"
+  "activatedBy": "2a7bb8c3-5286-4780-9403-35c45b8d0b80"
 }
