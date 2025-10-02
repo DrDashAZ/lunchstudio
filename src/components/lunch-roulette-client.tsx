@@ -181,6 +181,29 @@ export default function LunchRouletteClient() {
     persist(next);
   }
 
+  function handleResetAllRestaurants() {
+    const next = restaurants.map((r) => ({
+      ...r,
+      blacklisted: false,
+      lastSelectedDate: undefined
+    }));
+    setRestaurants(next);
+    persist(next);
+    toast({
+      title: "Restaurants Reset!",
+      description: "All restaurants have been unblacklisted and cooldowns cleared.",
+    });
+  }
+
+  function handleDeleteAllRestaurants() {
+    setRestaurants([]);
+    persist([]);
+    toast({
+      title: "All Restaurants Deleted!",
+      description: "The restaurant list has been cleared.",
+    });
+  }
+
   function handleActivation() {
       if (activationAttempt === SECRET_CODE) {
           setIsActivated(true);
@@ -476,6 +499,51 @@ export default function LunchRouletteClient() {
                 </p>
             </CardContent>
         </Card>
+
+        {isCurrentUserActivator && isActivated && restaurants.length > 0 && (
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <RotateCcw className="h-5 w-5"/>
+                        Admin Controls
+                    </CardTitle>
+                    <CardDescription>Power user controls for managing the restaurant list.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div className="space-y-1">
+                                <Label>Reset All Restaurants</Label>
+                                <p className="text-sm text-muted-foreground">Unblacklist all restaurants and clear cooldowns</p>
+                            </div>
+                            <Button 
+                                variant="outline" 
+                                onClick={handleResetAllRestaurants} 
+                                disabled={isStateLoading}
+                            >
+                                <RotateCcw className="mr-2 h-4 w-4" />
+                                Reset All
+                            </Button>
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                            <div className="space-y-1">
+                                <Label className="text-destructive">Delete All Restaurants</Label>
+                                <p className="text-sm text-muted-foreground">Permanently remove all restaurants from the list</p>
+                            </div>
+                            <Button 
+                                variant="destructive" 
+                                onClick={handleDeleteAllRestaurants} 
+                                disabled={isStateLoading}
+                            >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete All
+                            </Button>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        )}
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogContent className="sm:max-w-[425px]">

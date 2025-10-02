@@ -7,12 +7,6 @@
       "lastSelectedDate": 1758832465987
     },
     {
-      "id": "77584ea3-ae56-4d8c-a17a-70a7265f0a5f",
-      "name": "Burgers",
-      "blacklisted": false,
-      "lastSelectedDate": 1758921797967
-    },
-    {
       "id": "f009651a-b305-4eee-9b33-5af8b6591ba5",
       "name": "diner",
       "blacklisted": false
@@ -27,8 +21,13 @@
       "id": "7116bd1f-e037-4926-a1d8-541a1a29bc5d",
       "name": "tesss",
       "blacklisted": false
+    },
+    {
+      "id": "4eed1246-e49c-4b3c-a9ad-3c9fa198030e",
+      "name": "testburger",
+      "blacklisted": false
     }
   ],
   "cooldownWeeks": 2,
-  "activatedBy": "2a7bb8c3-5286-4780-9403-35c45b8d0b80"
+  "activatedBy": "14ba3724-dfd0-45bd-a7c8-61c8d4d5ad4b"
 }
