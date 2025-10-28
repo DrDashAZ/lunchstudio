@@ -1,5 +1,8 @@
-import { promises as fs } from "fs";
-import path from "path";
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export type Restaurant = {
   id: string;
@@ -14,27 +17,41 @@ export type ServerState = {
   activatedBy?: string; // Session ID of who activated
 };
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const STATE_FILE = path.join(DATA_DIR, "state.json");
+const TABLE_NAME = 'lunch_roulette_state';
 
 export async function readServerState(): Promise<ServerState> {
   try {
-    const raw = await fs.readFile(STATE_FILE, "utf8");
-    const parsed = JSON.parse(raw);
-    return normalizeState(parsed);
-  } catch (err: any) {
-    if (err && (err.code === "ENOENT" || err.code === "ENOTDIR")) {
-      // Return defaults when file does not exist yet
-      return { restaurants: [], cooldownWeeks: 2 };
+    const { data } = await supabase
+      .from(TABLE_NAME)
+      .select('state')
+      .single();
+
+    if (data?.state) {
+      return normalizeState(JSON.parse(data.state));
     }
-    throw err;
+
+    return { restaurants: [], cooldownWeeks: 2 };
+  } catch (err: any) {
+    console.error('Supabase read error:', err);
+    return { restaurants: [], cooldownWeeks: 2 };
   }
 }
 
 export async function writeServerState(state: ServerState): Promise<void> {
   const normalized = normalizeState(state);
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.writeFile(STATE_FILE, JSON.stringify(normalized, null, 2), "utf8");
+
+  try {
+    await supabase
+      .from(TABLE_NAME)
+      .upsert({
+        id: 1,
+        state: JSON.stringify(normalized),
+        updated_at: new Date().toISOString()
+      });
+  } catch (err: any) {
+    console.error('Supabase write error:', err);
+    throw new Error(`Database write failed: ${err.message || 'Unknown error'}`);
+  }
 }
 
 function normalizeState(input: any): ServerState {
@@ -56,6 +73,3 @@ function normalizeState(input: any): ServerState {
 
   return { restaurants, cooldownWeeks, activatedBy };
 }
-
-
-
