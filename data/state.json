@@ -1,0 +1,21 @@
+{
+  "restaurants": [
+    {
+      "id": "c5d3eb61-7811-49e6-9526-053f942502ce",
+      "name": "Burgers",
+      "blacklisted": false
+    },
+    {
+      "id": "6545b7b9-dbc1-4c30-b799-7ce620022cda",
+      "name": "Tacos",
+      "blacklisted": false
+    },
+    {
+      "id": "24fbcd29-6522-4996-b646-4190372686c4",
+      "name": "sandwich",
+      "blacklisted": false
+    }
+  ],
+  "cooldownWeeks": 2,
+  "activatedBy": "14ba3724-dfd0-45bd-a7c8-61c8d4d5ad4b"
+}
