@@ -107,15 +107,25 @@ export default function LunchRouletteClient() {
       const res = await fetch("/api/state", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          restaurants: nextRestaurants, 
+        body: JSON.stringify({
+          restaurants: nextRestaurants,
           cooldownWeeks: nextCooldownWeeks,
           activatedBy: nextActivatedBy !== undefined ? nextActivatedBy : activatedBy
         }),
       });
-      if (!res.ok) throw new Error();
-    } catch {
-      toast({ variant: "destructive", title: "Save failed", description: "Could not save changes to server." });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Server error:", errorData);
+        throw new Error(errorData.error || errorData.message || `Server error: ${res.status}`);
+      }
+    } catch (error: any) {
+      console.error("Persist error:", error);
+      toast({
+        variant: "destructive",
+        title: "Save failed",
+        description: `Could not save changes: ${error.message || "Network error"}`
+      });
     }
   }
 
