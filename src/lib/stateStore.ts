@@ -21,10 +21,18 @@ const TABLE_NAME = 'lunch_roulette_state';
 
 export async function readServerState(): Promise<ServerState> {
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from(TABLE_NAME)
       .select('state')
       .single();
+
+    if (error) {
+      // This is expected for the first read when the table is empty
+      if (error.code !== 'PGRST116') { // PGRST116 is "No rows found"
+        console.warn('Supabase read error:', error);
+      }
+      return { restaurants: [], cooldownWeeks: 2 };
+    }
 
     if (data?.state) {
       return normalizeState(JSON.parse(data.state));
@@ -32,7 +40,7 @@ export async function readServerState(): Promise<ServerState> {
 
     return { restaurants: [], cooldownWeeks: 2 };
   } catch (err: any) {
-    console.error('Supabase read error:', err);
+    console.warn('Supabase read error:', err);
     return { restaurants: [], cooldownWeeks: 2 };
   }
 }
@@ -41,13 +49,18 @@ export async function writeServerState(state: ServerState): Promise<void> {
   const normalized = normalizeState(state);
 
   try {
-    await supabase
+    const { error } = await supabase
       .from(TABLE_NAME)
       .upsert({
         id: 1,
         state: JSON.stringify(normalized),
         updated_at: new Date().toISOString()
       });
+
+    if (error) {
+      console.error('Supabase write error:', error);
+      throw new Error(`Database write failed: ${error.message || 'Unknown error'}`);
+    }
   } catch (err: any) {
     console.error('Supabase write error:', err);
     throw new Error(`Database write failed: ${err.message || 'Unknown error'}`);
