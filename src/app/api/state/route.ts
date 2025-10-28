@@ -18,9 +18,16 @@ export async function PUT(req: NextRequest) {
     await writeServerState(next);
     return Response.json(next, { status: 200 });
   } catch (err: any) {
-    return Response.json({ error: err?.message ?? "Failed to save" }, { status: 400 });
+    console.error('API Error:', {
+      error: err?.message,
+      stack: err?.stack,
+      cwd: process.cwd(),
+      code: err?.code
+    });
+    return Response.json({
+      error: err?.message ?? "Failed to save",
+      type: err?.code || "UNKNOWN_ERROR",
+      cwd: process.cwd()
+    }, { status: 400 });
   }
 }
-
-
-
